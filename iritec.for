@@ -1,17 +1,17 @@
 c iritec.for, version number can be found at the end of this comment.
-c-----------------------------------------------------------------------        
+c-----------------------------------------------------------------------
 C
-C contains IRITEC, IONCORR subroutines to computed the 
-C total ionospheric electron content (TEC) and the ionospheric 
+C contains IRITEC, IONCORR subroutines to computed the
+C total ionospheric electron content (TEC) and the ionospheric
 C correction caused by TEC, respectively.
 C
-c-----------------------------------------------------------------------        
+c-----------------------------------------------------------------------
 C Corrections
 C
 C  3/25/96 jmag in IRIT13 as input
 C  8/31/97 hu=hr(i+1) i=6 out of bounds condition corrected
 C  9/16/98 JF(17) added to input parameters; OUTF(11,50->100)
-C  ?/ ?/99 Ne(h) restricted to values smaller than NmF2 for topside        
+C  ?/ ?/99 Ne(h) restricted to values smaller than NmF2 for topside
 C 11/15/99 JF(20) instead of JF(17)
 C 10/16/00 if hr(i) gt hend then hr(i)=hend
 C 12/14/00 jf(30),outf(20,100),oarr(50)
@@ -26,31 +26,31 @@ c
 C 2012.00 10/05/11 IRI-2012: bottomside B0 B1 model (SHAMDB0D, SHAB1D),
 C 2012.00 10/05/11    bottomside Ni model (iriflip.for), auroral foE
 C 2012.00 10/05/11    storm model (storme_ap), Te with PF10.7 (elteik),
-C 2012.00 10/05/11    oval kp model (auroral_boundary), IGRF-11(igrf.for), 
+C 2012.00 10/05/11    oval kp model (auroral_boundary), IGRF-11(igrf.for),
 C 2012.00 10/05/11    NRLMSIS00 (cira.for), CGM coordinates, F10.7 daily
 C 2012.00 10/05/11    81-day 365-day indices (apf107.dat), ap->kp (ckp),
 C 2012.00 10/05/11    array size change jf(50) outf(20,1000), oarr(100).
 C
-C 2020.00 03/15/23 Inclusion of plasmasphere 
+C 2020.00 03/15/23 Inclusion of plasmasphere
 C 2020.00 03/15/23 Revised numerical integration and stepsizes
 C 2020.01 03/23/23 Revised IRIT13 to IRITEC
-C 2020.02 05/10/23 Added JFF(50) 
+C 2020.02 05/10/23 Added JFF(50)
 C 2020.02 12/04/23 Deleted subroutine iri_tec, no longer needed
-C 2020.03 03/03/24 if(iisect.. moved to after tecb=0         [R. Skantz] 
-C 2020.03 03/03/24 hmF2,xnmF2,xnorm defined for last segment [R. Skantz] 
+C 2020.03 03/03/24 if(iisect.. moved to after tecb=0         [R. Skantz]
+C 2020.03 03/03/24 hmF2,xnmF2,xnorm defined for last segment [R. Skantz]
 C 2020.03 03/25/25 ******** released on irimodel.org *************
-C 2020.04 09/22/25 IRITEC: deleting JFF                     [M.-Y. Chou] 
+C 2020.04 09/22/25 IRITEC: deleting JFF                     [M.-Y. Chou]
 C 2020.04 09/25/25 ******** released on irimodel.org *************
 C
-c-----------------------------------------------------------------------        
+c-----------------------------------------------------------------------
 C
 C
         subroutine IRITEC(ALATI,ALONG,jmag,jf,iy,md,hour,hbeg,hend,
      &                          hstep,oarr,tecbo,tecto)
-c-----------------------------------------------------------------------        
+c-----------------------------------------------------------------------
 c Program for numerical integration of IRI profiles from h=hbeg
-C to h=hend. 
-C       
+C to h=hend.
+C
 C  INPUT:  ALATI,ALONG  LATITUDE NORTH AND LONGITUDE EAST IN DEGREES
 C          jmag         =0 geographic   =1 geomagnetic coordinates
 C          jf(1:50)     =.true./.false. flags; explained in IRISUB.FOR
@@ -58,14 +58,14 @@ C          iy,md        date as yyyy and mmdd (or -ddd)
 C          hour         decimal hours LT (or UT+25)
 c          hbeg,hend    upper and lower integration limits in km
 c          hstep        stepsize in km
-C 
+C
 C  OUTPUT: tecbo,tecto  Total Electron Content in m-2 below hmF2 (tecb)
 C                       and above hmF2 (tect)
-c-----------------------------------------------------------------------        
+c-----------------------------------------------------------------------
 
         dimension       outf(20,1000),oarr(100)
         logical         jf(50)
-		
+
         iisect = int(((hend-hbeg)/hstep)/1000.0)
 	hsect = 1000.0 * hstep
 	hastep = hstep/2.0
@@ -73,8 +73,8 @@ c-----------------------------------------------------------------------
         tecb= 0.
 	if(iisect.lt.1) goto 2345
 c
-c calculate IRI densities from hbeg+hstep/2 to hend-hstep/2 
-c		
+c calculate IRI densities from hbeg+hstep/2 to hend-hstep/2
+c
 	do j=1,iisect
           abeg = hbeg + (j-1)* hsect + hastep
           aend = abeg + hsect - hstep
@@ -89,7 +89,7 @@ c
 c Numerical integration for each 1000 point segment.
 c (xnorm is divided by 1000 to account for heights in km)
 c
-          hx = abeg + hastep 
+          hx = abeg + hastep
           do jj=1,1000
             yyy = outf(1,jj) * hstep / xnorm
             if (hx.le.hmF2) then
@@ -112,7 +112,7 @@ c
         hmF2 = oarr(2)
         xnmF2 = oarr(1)
         xnorm = xnmF2/1000.
-        hx = abeg + hastep 
+        hx = abeg + hastep
         do jj=1,ilast
           yyy = outf(1,jj) * hstep / xnorm
           if (hx.le.hmF2) then
@@ -120,9 +120,9 @@ c
           else
             tect = tect + yyy
           endif
-          hx = hx + hstep 
+          hx = hx + hstep
           enddo
-		   
+
         tecto = tect * xnmF2
         tecbo = tecb * xnmF2
         return
@@ -130,10 +130,10 @@ c
 c
 c
         real function ioncorr(tec,f)
-c-----------------------------------------------------------------------        
+c-----------------------------------------------------------------------
 c computes ionospheric correction IONCORR (in m) for given vertical
 c ionospheric electron content TEC (in m-2) and frequency f (in Hz)
-c-----------------------------------------------------------------------        
+c-----------------------------------------------------------------------
         ioncorr = 40.3 * tec / (f*f)
         return
         end

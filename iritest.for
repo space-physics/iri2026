@@ -4,12 +4,12 @@ c
 c test program for the iri_web subroutine
 c
 c***********************************************************************
-c!********************* IMPORTANT PLEASE READ **************************        
+c!********************* IMPORTANT PLEASE READ **************************
 c***********************************************************************
 c
-c This test program shows how to initialize and call the IRI subroutine 
-c IRI_SUB. Any program using IRI_SUB needs to include the following 
-c statements (this iritest.for program shows you how and where to include 
+c This test program shows how to initialize and call the IRI subroutine
+c IRI_SUB. Any program using IRI_SUB needs to include the following
+c statements (this iritest.for program shows you how and where to include
 c these statements):
 c
 c	call read_ig_rz
@@ -22,37 +22,37 @@ c       do i=1,100
 c          oar(i,1)=-1.0
 c          enddo
 c
-c If you want to use the standard version of IRI you should make sure 
-c that the JF(50) logical values are set to the recommended default 
-c values: 
+c If you want to use the standard version of IRI you should make sure
+c that the JF(50) logical values are set to the recommended default
+c values:
 c     jf(4,5,6,23,30,33,35,39,40,47)=.false. all others =.true.
-c You can turn off (jf( )=.false.) the computation of certain parameters 
+c You can turn off (jf( )=.false.) the computation of certain parameters
 c if you do not need these parameters:
-c     jf(1): Ne; jf(2): Te Ti Tn; jf(3): Ni; jf(21): ion drift; 
-c     jf(28): spread-F probability 
+c     jf(1): Ne; jf(2): Te Ti Tn; jf(3): Ni; jf(21): ion drift;
+c     jf(28): spread-F probability
 c For some parameters the default is already .false.:
 c     jf(33): auroral boundaries; jf(35): foE storm model;
-c     jf(47): CGM coordinates 
+c     jf(47): CGM coordinates
 c If you use IRI with JF values other than the default values please
 c make sure to mention this in any publication that results from your
-c research.  
+c research.
 c
-c Required files: irisub.for, irifun.for, iritec.for, iridreg.for, 
-c                 iriflip.for, igrf.for, cira.for, rocdrift.for        
+c Required files: irisub.for, irifun.for, iritec.for, iridreg.for,
+c                 iriflip.for, igrf.for, cira.for, rocdrift.for
 c
-c Required i/o units:  
+c Required i/o units:
 c  IRISUB.FOR, IRIFUN.FOR, IGRF.FOR:
 c   KONSOL= 6: Program messages to konsol       (if jf(12)=.true.)
-c   KONSOL=11: Program messages to MESSAGES.TXT (if jf(12)=.false.) 
-c	  (COMMON/iounit/konsol,mess is used to pass the values from  
+c   KONSOL=11: Program messages to MESSAGES.TXT (if jf(12)=.false.)
+c	  (COMMON/iounit/konsol,mess is used to pass the values from
 c	  IRISUB to IRIFUN and IGRF. If mess=false messages are turned off)
 c  IRISUB:
 c	IUCCIR=10: CCIR and URSI coefficients (CCIR%%.ASC, %%=month+10)
 c  IRIFUN:
-c   read_data_SD: UNIT=10 coefficients of Shubin (2015) hmF2 model  
-c   read_ig_rz: UNIT=12 Solar/ionospheric indices IG12, R12 (IG_RZ.DAT) 
+c   read_data_SD: UNIT=10 coefficients of Shubin (2015) hmF2 model
+c   read_ig_rz: UNIT=12 Solar/ionospheric indices IG12, R12 (IG_RZ.DAT)
 c   readapf107: UNIT=13 Magnetic indices and F10.7 (APF107.DAT)
-c  IGRF: 
+c  IGRF:
 c   GETSHC: UNIT=14  IGRF coeff. (DGRF%%%%.DAT, IGRF%%%%.DAT, %%%%=year)
 c
 c***********************************************************************
@@ -70,12 +70,12 @@ c 2005.01 05/06/06 included spread-F (jf(28)) and topside (jf(29)) options
 C 2007.00 05/18/07 Release of IRI-2007
 c 2007.02 10/31/08 outf(100) -> outf(500), numhei=numstp=500
 c 2007.03 02/12/09 added new D-region option (h=-3)
-c 2007.11 04/19/10 correct TEC for normal output  [Shunrong Zhang] 
+c 2007.11 04/19/10 correct TEC for normal output  [Shunrong Zhang]
 c
 C 2012.00 10/05/11 IRI-2012: bottomside B0 B1 model (SHAMDB0D, SHAB1D),
 C 2012.00 10/05/11    bottomside Ni model (iriflip.for), auroral foE
 C 2012.00 10/05/11    storm model (storme_ap), Te with PF10.7 (elteik),
-C 2012.00 10/05/11    oval kp model (auroral_boundary), IGRF-11(igrf.for), 
+C 2012.00 10/05/11    oval kp model (auroral_boundary), IGRF-11(igrf.for),
 C 2012.00 10/05/11    NRLMSIS00 (cira.for), CGM coordinates, F10.7 daily
 C 2012.00 10/05/11    81-day 365-day indices (apf107.dat), ap->kp (ckp),
 C 2012.00 10/05/11    array size change jf(50) outf(20,1000), oarr(100).
@@ -86,7 +86,7 @@ C 2012.03 09/18/14 rzino, igino logical not real; and more (A. Mazzella)
 C 2012.03 09/18/14 jf defaults and special for piktab=3    (A. Mazzella)
 C 2012.03 09/23/14 jf(22): output option Ni in [m-3]/1.e9
 C 2012.03 09/23/14 jf(36:38) include in input choices
-C 2012.03 09/23/14 added output options for parameters oar(59:86) 
+C 2012.03 09/23/14 added output options for parameters oar(59:86)
 C 2012.05 04/27/15 delete double line CHARACTER*9  pname(6)
 C 2015.01 06/30/15 scid=1.0E-9                              (A. Charisi)
 C 2015.01 06/30/15 jino-outf(9)&jio2-outf(8) write.jio2,jino(A. Charisi)
@@ -98,17 +98,17 @@ C 2016.01 06/01/16 User specified B0 when jf(43)=false
 C 2016.02 08/22/16 Allow user input options for F10.7D and F10.7_81
 C 2016.03 04/25/18 cleaned up user input options: B0,B1,F10.7D,F10.7_81
 C 2016.04 09/05/18 user input options: HNEA and HNEE
-C 2020.01 09/08/20 deleted extra jf(43) input                (C. Vasyl) 
-C 2020.02 09/08/20 re-arranged jf inputs - if user input no options 
+C 2020.01 09/08/20 deleted extra jf(43) input                (C. Vasyl)
+C 2020.02 09/08/20 re-arranged jf inputs - if user input no options
 C 2020.03 09/16/20 messages if auroral boundary or CGM are off
-C 2020.04 10/03/21 hmF2: Shubin model default, jf(40)=.false 
+C 2020.04 10/03/21 hmF2: Shubin model default, jf(40)=.false
 C 2020.05 10/22/23 user input for htec_min for iri_web
 C 2020.05 10/22/23 delete user input option for HNEA and HNEE
 C 2020.06 12/10/24 Ne-topside: COR2 default
 C 2020.06 12/10/24 Included output for Sporadic-E Occ. Prob. oar(91,*)
 C 2020.06 09/25/25 ******** released on irimodel.org *************
 C
-C 2026.01 06/15/26 Change to Te-TBPS-2026 model 
+C 2026.01 06/15/26 Change to Te-TBPS-2026 model
 C 2026.02 06/20/26 Added online/table text for Te,Ti,Es-prob,IBP
 C 2026.02 06/20/26 Added ESPROB, IBP to 6-parameter output option
 C
@@ -166,9 +166,9 @@ c		ut0=-1
 
         call read_ig_rz
         call readapf107
-        
+
         nummax=1000
-        
+
         do 6249 i=1,100
 6249    oar(i,1)=-1.0
 
@@ -206,13 +206,13 @@ c outf(15,*)= ratio plasma to gyro frequency
         print *,'Options (50): t(rue) or f(alse)'
         print *,'Enter 0 to use standard or 1 to enter your own'
         read(5,*) jchoice
-          do i=1,50 
+          do i=1,50
                 jf(i)=.true.
                 enddo
           if(piktab.eq.4) jf(24)=.false.
         if(jchoice.eq.0) then
 c defaults for jf(1:50)
-c          jf(1)=.false.      ! f=no electron densities (t) 
+c          jf(1)=.false.      ! f=no electron densities (t)
 c          jf(2)=.false.      ! f=no temperatures (t)
 c          jf(3)=.false.      ! f=no ion composition (t)
           jf(4)=.false.      ! t=B0table f=other models (f)
@@ -252,14 +252,14 @@ c          jf(36)=.false.     ! t=hmF2 w/out foF2_storm f=with (t)
 c          jf(37)=.false.     ! t=topside w/out foF2_storm f=with (t)
 c          jf(38)=.false.     ! t=bubble prob. IBP on  f=off (t)
           jf(39)=.false.     ! t=M3000F2 model f=new hmF2 models (f)
-          jf(40)=.false.     ! t=AMTB-model, f=Shubin-COSMIC model (f) 
-c          jf(41)=.false.     ! t:COV=F10.7_386 f:COV=f(IG12) (t) 
+          jf(40)=.false.     ! t=AMTB-model, f=Shubin-COSMIC model (f)
+c          jf(41)=.false.     ! t:COV=F10.7_386 f:COV=f(IG12) (t)
 c          jf(42)=.false.     ! t/f=TBPS-2026 w/o PF10.7 dependance (t)
 c          jf(43)=.false.     ! t= B0 model f= B0 user input (t)
 c          jf(44)=.false.     ! t= B1 model f= B1 user input (t)
 C          jf(45)=.false.     ! t=Es occ. prob on      f=off   (t)
 C          jf(46)=.false.     ! t=Es prob w/o  f=Es prob with F10.7 dep.(t)
-C (45,46) = (t,t) ESPROB, (t,f) ESPRO with F10.7, (f,f) ESPRO off, 
+C (45,46) = (t,t) ESPROB, (t,f) ESPRO with F10.7, (f,f) ESPRO off,
 C           (f,t) ESPROB with F10.7 and kp dependence
           jf(47)=.false.     ! t=CGM on  f=CGM off (f)
 c          jf(48)=.false.     ! t=Ozhogin plasmasphere  f=Gallagher (t)
@@ -307,14 +307,14 @@ c              	read(5,*) jf(46)
               	read(5,*) jf(9)
               if(jf(9)) then
                 print *,'hmF2: t=f(M3000F2), f=new models {f}'
-                	read(5,*) jf(39)              
+                	read(5,*) jf(39)
                 print *,'hmF2: t=AMTB-model, f=Shubin-COSMIC model {f}'
-                	read(5,*) jf(40)              
+                	read(5,*) jf(40)
                 if(jf(39)) then
                   print *,'hmF2: t=w/o foF2 storm model, f=with {t}'
                   	read(5,*) jf(36)
-                  endif 
-                endif             
+                  endif
+                endif
               print *,'B0 bottomside thickness: t=model, ',
      &              'f=user input {t}'
               	read(5,*) jf(43)
@@ -326,7 +326,7 @@ c              	read(5,*) jf(46)
      &            'f=other options {f}.'
               		read(5,*) jf(4)
               	print *,'Bottomside thickness B0: t=ABT-2009, ',
-     &            'f= Gul-1987 {t}.'     
+     &            'f= Gul-1987 {t}.'
               		read(5,*) jf(31)
               	endif
               print *,'F1 peak density or foF1: t=model, ',
@@ -361,7 +361,7 @@ c              	read(5,*) jf(46)
               	read(5,*) jf(48)
           	  endif
         if(jf(3)) then
-              print *,'Ion comp. model: t=DS95/DY85, f=RBV10/TBT15 {f}' 
+              print *,'Ion comp. model: t=DS95/DY85, f=RBV10/TBT15 {f}'
               	read(5,*) jf(6)
               print *,'Ni: t=ion composition in %, f=ion densities',
      &             'in cm-3 {t}'
@@ -397,14 +397,14 @@ c              	read(5,*) jf(46)
         endif
 
 c       if(piktab.gt.3) jf(24)=.false.
-c option to enter six additional parameters 
+c option to enter six additional parameters
 c
 
       if(PIKTAB.eq.3) then
         print *,'6 Parameters of your choice (number:1-91)'
         do i5=1,9
            i5s=(i5-1)*10+1
-           i5e=i5s+9 
+           i5e=i5s+9
            print *,(pna(j),j=i5s,i5e)
            enddo
 c        print *,(pna(j),j=11,20)
@@ -420,14 +420,14 @@ c        print *,(pna(j),j=81,90)
         print *,'      spread-F probability [48]'
         print *,'      equatorial vertical ion drift [44]'
         print *,'      foF2_storm/foF2_quiet [45]'
-        print *,'      sporadic-E probability [91]' 
+        print *,'      sporadic-E probability [91]'
         print *,'      plasma bubble probability [92]'
         print *,'      CGM-Lat of equatorw. auroral boundary [58]'
         print *,'or  23,27,58,85,51,53 for:'
         print *,'      solar zenith angle [23]'
-        print *,'      modified dip latitude [27]' 
+        print *,'      modified dip latitude [27]'
         print *,'      L-value [85]'
-        print *,'      Ap for current UT [51]' 
+        print *,'      Ap for current UT [51]'
         print *,'      magnetic local time (MLT) [54]'
         print *,'      invdip_old [53]'
 c change defaults for computation of specific parameters
@@ -437,31 +437,31 @@ c change defaults for computation of specific parameters
         jf(45)=.true.  ! sporadic-E prob. computed
               read(5,*) (pad1(jjj),jjj=1,6)
               do jjj=1,6
-              if(pad1(jjj).eq.44) JF(21)=.true. 
-              if(pad1(jjj).eq.45) JF(26)=.true. 
-              if(pad1(jjj).eq.47) JF(35)=.true. 
-              if(pad1(jjj).eq.48) JF(28)=.true. 
-              if(pad1(jjj).eq.55) JF(47)=.true. 
-              if(pad1(jjj).eq.58) JF(33)=.true. 
-              if(pad1(jjj).eq.91) JF(45)=.true. 
-              if(pad1(jjj).eq.92) JF(38)=.true. 
+              if(pad1(jjj).eq.44) JF(21)=.true.
+              if(pad1(jjj).eq.45) JF(26)=.true.
+              if(pad1(jjj).eq.47) JF(35)=.true.
+              if(pad1(jjj).eq.48) JF(28)=.true.
+              if(pad1(jjj).eq.55) JF(47)=.true.
+              if(pad1(jjj).eq.58) JF(33)=.true.
+              if(pad1(jjj).eq.91) JF(45)=.true.
+              if(pad1(jjj).eq.92) JF(38)=.true.
               enddo
       endif
-       
+
 c option to enter measured values for NmF2, hmF2, NmF1, hmF1, NmE, hmE,
-c B0, N(300), N(400), N(600) if available; 
+c B0, N(300), N(400), N(600) if available;
 c
           print *,' '
           print *,' '
           print *,' '
-          numstp=int((vend-vbeg)/vstp)+1            
+          numstp=int((vend-vbeg)/vstp)+1
               if(ivar.eq.1) numstp=1
        if(jf(1)) then
          if(.not.jf(8).or..not.jf(9).or..not.jf(13).or..not.jf(14).or.
      &  .not.jf(15).or..not.jf(16).or..not.jf(43).or..not.jf(44)) then
             var=vbeg
             i=1
-c --------- user input: foF2 or NmF2            
+c --------- user input: foF2 or NmF2
 2234        if(.not.jf(8)) then
               jf(26)=.false.    ! storm model off, if user input
               print *,'foF2/Mhz or NmF2/m-3 for ',itext(ivar),
@@ -470,7 +470,7 @@ c --------- user input: foF2 or NmF2
               pname(1)='foF2/MHz'
               if(oar(1,i).gt.30.) pname(1)='NmF2/m-3'
               endif
-c --------- user input: hmf2 or M(3000)F2            
+c --------- user input: hmf2 or M(3000)F2
             if(.not.jf(9)) then
               print *,'hmF2/km or M3000F2 for ',itext(ivar),
      &              '=',var
@@ -478,7 +478,7 @@ c --------- user input: hmf2 or M(3000)F2
               pname(2)='M(3000)F2'
               if(oar(2,i).gt.50.) pname(2)='hmF2/km'
               endif
-c --------- user input: foF1 or NmF1            
+c --------- user input: foF1 or NmF1
             if(.not.jf(13)) then
               print *,'foF1/MHz or NmF1/m-3 for ',itext(ivar),
      &               '=',var
@@ -486,13 +486,13 @@ c --------- user input: foF1 or NmF1
               pname(3)='foF1/MHz'
               if(oar(3,i).gt.30.) pname(3)='NmF1/m-3'
               endif
-c --------- user input: hmF1            
+c --------- user input: hmF1
             if(.not.jf(14)) then
               print *,'hmF1/km for ',itext(ivar),'=',var
               read(5,*) oar(4,i)
               pname(4)='hmF1/km'
               endif
-c --------- user input: foE or NmE            
+c --------- user input: foE or NmE
             if(.not.jf(15)) then
               print *,'foE/MHz or NmE/m-3 for ',itext(ivar),
      &                '=',var
@@ -500,19 +500,19 @@ c --------- user input: foE or NmE
               pname(5)='foE/MHz'
               if(oar(5,i).gt.30.) pname(5)='NmE/m-3'
               endif
-c --------- user input: hmE            
+c --------- user input: hmE
             if(.not.jf(16)) then
               print *,'hmE/km for ',itext(ivar),'=',var
               read(5,*) oar(6,i)
               pname(6)='hmE/km'
               endif
-c --------- user input: B0            
+c --------- user input: B0
             if(.not.jf(43)) then
               print *,'B0/km for ',itext(ivar),'=',var
               read(5,*) oar(10,i)
               pname(7)='B0/km '
               endif
-c --------- user input: B1            
+c --------- user input: B1
             if(.not.jf(44)) then
               print *,'B1 for ',itext(ivar),'=',var
               read(5,*) oar(35,i)
@@ -528,14 +528,14 @@ c option to enter Ne for Te-Ne relationship
 c
         if(jf(2).and..not.jf(10)) then
           var=vbeg
-          do 1235 i=1,numstp 
+          do 1235 i=1,numstp
             print *,'Ne(300km),Ne(400km)/m-3',
      &         ' for ',itext(ivar),'=',var,' [-1 if not]'
             read(5,*) oar(15,i),oar(16,i)
 1235        var=var+vstp
           endif
 
-c option to enter F107D and/or F107_81 
+c option to enter F107D and/or F107_81
 c
             if(.not.jf(25)) then
                     print *,'User input for F10.7D'
@@ -617,7 +617,7 @@ c
                    bopt='Gul-1987'
              endif
         endif
-        
+
         if(jf(45)) then
               if(jf(46)) then
                    esopt='without F10.7,ap dep.'
@@ -643,7 +643,7 @@ c
 
         sopt='off'
         if(jf(26)) sopt='on '
-        
+
         seopt='off'
         if(jf(35)) seopt='on '
 
@@ -671,13 +671,13 @@ c
         if(jf(25)) fdopt=' '
         f8opt=' user input'
         if(jf(32)) f8opt=' '
-        
+
         hxx=hx
         jmag=jm
         mmdd=imd
 
 c calling IRI subroutine
-c 
+c
         phour=hour
         call iri_web(jmag,jf,xlat,xlon,iy,mmdd,iut,hour,
      &    hxx,htec_min,htec_max,ivar,vbeg,vend,vstp,outf,oar)
@@ -698,7 +698,7 @@ c
             write(7,3295) f1opt
             write(7,3299) seopt
             write(7,3081) dopt
-            
+
             numi=numstp
             if(ivar.eq.1) numi=1
             do j=1,6
@@ -711,8 +711,8 @@ c
                 if(.not.jf(43)) then
                     write(7,302) pname(7)
                     write(7,402) (oar(10,i),i=1,numi)
-                    endif                
-            endif 
+                    endif
+            endif
 
         write(7,3277) esopt
         write(7,3278) ibpopt
@@ -721,7 +721,7 @@ c
         	write(7,3292) topt,tsopt
         	write(7,3297) tiopt
         	endif
-        if(jf(3)) write(7,329) iopt        
+        if(jf(3)) write(7,329) iopt
         if(.not.jf(47)) write(7,7234)
         if(.not.jf(33)) write(7,7235)
 
@@ -748,9 +748,9 @@ c
      &    A2,2X,A4,' Lat/Long/Alt=',F5.1,'/',F6.1,'/',F6.1/)
 3914    format(/'TEC [1.E16 m-2] is obtained by numerical integ',
      &    'ration in 1km steps'/' from ',F7.1,' to ',F7.1,' km. ',
-     &    't is the percentage of TEC above the F peak.') 
+     &    't is the percentage of TEC above the F peak.')
 3916    format(/'M3000F2: Propagation factor related to hmF2'/
-     &    'B0: bottomside thickness parameter.') 
+     &    'B0: bottomside thickness parameter.')
 301     format(A4,' maps are used for the F2 peak density (NmF2)')
 302     format(A9,' provided by user:')
 402     format(7(1PE10.3))
@@ -787,9 +787,9 @@ c
 214     format('Peak Heights/km:     hmF2=',F9.2,'   hmF1=',F9.2,
      &          '   hmE=',F9.2/)
 3314    format(A7,' is used for topside Ne profile')
-7234    format('CGM coordinate computation is turned off') 
+7234    format('CGM coordinate computation is turned off')
 7235    format('Auroral boundary computation is turned off')
-4314    format(A8,' plasmasphere model ',A4,' plasmapause') 
+4314    format(A8,' plasmasphere model ',A4,' plasmapause')
 c
 c table head .......................................................
 c
@@ -799,7 +799,7 @@ c
         if(jmag.gt.0.and.(ivar.eq.2.or.ivar.eq.3)) xtex='GEOM'
         if(iut.gt.0.and.ivar.eq.8) xtex='U.T.'
 
-        IF(PIKTAB.EQ.4) WRITE(7,8199) 
+        IF(PIKTAB.EQ.4) WRITE(7,8199)
         IF(PIKTAB.EQ.3) WRITE(7,8191) ITEXT(IVAR),
      &    (pna(pad1(j)),j=1,6),xtex,(uni(pad1(j)),j=1,6)
         IF(PIKTAB.EQ.2) WRITE(7,8194) ITEXT(IVAR),xtex
@@ -809,7 +809,7 @@ c
            if(jf(22)) then
               WRITE(7,8193) ITEXT(IVAR),xtex
            else
-              WRITE(7,9193) ITEXT(IVAR),xtex        	
+              WRITE(7,9193) ITEXT(IVAR),xtex
            endif
 	ENDIF
 8191  FORMAT(/'-'/2X,A5,6A10/3X,A4,6A10)
@@ -832,13 +832,13 @@ c
 c
 c output: D-region PIKTAB=4
 c
-c D-REGION ELECTRON DENSITY IN CM-3: 
-c    IRI-07    FIRI  Danilov:SW/WA=0/0  0.5/0   1/0    0/0.5    0/1 
+c D-REGION ELECTRON DENSITY IN CM-3:
+c    IRI-07    FIRI  Danilov:SW/WA=0/0  0.5/0   1/0    0/0.5    0/1
 c                    DRS-95: Stratos Warming/Winter Anomaly
 c
 
 		if(piktab.eq.4) then
-            do 2591 lix=1,77 
+            do 2591 lix=1,77
             	jdprof(lix)=-1
             	dichte=outf(14,lix)
 2591            if(dichte.gt.0.) jdprof(lix)=int(dichte/1.e6+0.5)
@@ -847,11 +847,11 @@ c
             	WRITE(7,3810) ihtemp,jdprof(lix),jdprof(lix+11),
      &  			jdprof(lix+22),jdprof(lix+33),jdprof(lix+44),
      &  			jdprof(lix+55),jdprof(lix+66)
-2592		    continue			
+2592		    continue
 3810    FORMAT(I3,7I8)
 			goto 2357
 		 	endif
-		
+
         xcor=vbeg
 
         do 1234 li=1,numstp
@@ -1031,9 +1031,9 @@ c     &        jih,jihe,jino,jio2,jicl,tec,itopp
 
 1234    xcor=xcor+vstp
 
-2357    print *,'Enter 0 to exit or 1 to generate another profile?' 
+2357    print *,'Enter 0 to exit or 1 to generate another profile?'
         read(5,*) icontinue
         if (icontinue.gt.0) goto 1
-c		print *,oar(51,1),oar(52,1),oar(83,1)    
+c		print *,oar(51,1),oar(52,1),oar(83,1)
             stop
             end
